@@ -164,7 +164,9 @@ Remember, one of the key aspects of threat detection is having a good understand
 
 * * *
 
-## Practical Exercises
+# ==🔴Practical Exercises==
+
+
 
 Navigate to the bottom of this section and click on `Click here to spawn the target system!`
 
@@ -172,9 +174,12 @@ Now, RDP to `[Target IP]` using the provided credentials, open Windows Event Vie
 
         shellsession
 `oussamaHB@htb[/htb]$ xfreerdp /u:Administrator /p:'HTB_@cad3my_lab_W1n10_r00t!@0' /v:[Target IP] /dynamic-resolution`
+Good. The goal is to solve this like a SOC analyst, not memorize an executable name. These two questions are testing whether you can correlate Windows security events, identify the process responsible for a change, and build an XML query to verify your hypothesis.
 
 
-
+|     |     |
+| --- | --- |
+[[HTB - Windows Event Correlation.md|HTB - Windows Event Correlation.md]]
 
 
 
