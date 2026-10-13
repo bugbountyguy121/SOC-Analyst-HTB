@@ -1,8 +1,20 @@
 ---
-title: "SIEM Mastery Field Manual — Kibana Dashboards, Windows Event Detection & Alert Triage"
-aliases: [SIEM Field Manual, HTB Module 211 Deep Dive, KQL Dotted Fields Decoder]
-tags: [siem, soc, kibana, elastic, kql, windows-events, triage, htb-academy, L3]
-source: "HTB Academy — SOC Analyst Path, Module 211 (SIEM visualization examples 1-4, Triaging Process, Skills Assessment)"
+title: SIEM Mastery Field Manual — Kibana Dashboards, Windows Event Detection & Alert Triage
+aliases:
+  - SIEM Field Manual
+  - HTB Module 211 Deep Dive
+  - KQL Dotted Fields Decoder
+tags:
+  - siem
+  - soc
+  - kibana
+  - elastic
+  - kql
+  - windows-events
+  - triage
+  - htb-academy
+  - L3
+source: HTB Academy — SOC Analyst Path, Module 211 (SIEM visualization examples 1-4, Triaging Process, Skills Assessment)
 level: L3 (explain it + teach it + ELI5 analogy)
 created: 2026-10-09
 ---
@@ -14,17 +26,17 @@ created: 2026-10-09
 > A rebuilt, exhaustive study version of the HTB Academy text. The source is **9 exported pages, but only ~7 distinct sections** (Example 1 and Example 3 are each duplicated, the Triaging Process is duplicated). This note de-duplicates, then goes **under** the UI: fields, queries, aggregations, Windows internals, attacker evasion, detection logic.
 
 ## 🧭 Map
-- [[#0 How to use this note (L1 / L2 / L3)]]
-- [[#0.5 Critical clarification KQL is not one language]]
-- [[#1 The Microscopic Glossary]]
-- [[#2 Log Anatomy & Fields Breakdown]]
-- [[#3 The Machinery]]
-- [[#4 The What-If Scenarios]]
-- [[#5 First-Principles Mastery]]
-- [[#6 The Dotted-Field Decoder (KQL lab)]]
-- [[#7 Assessment Walkthrough Eagle SOC]]
-- [[#8 L3 Teach-Back Kit (ELI5 + flashcards)]]
-- [[#9 Caveats & things the source text simplifies]]
+- [[SIEM-Mastery-Field-Manual#0 How to use this note (L1 / L2 / L3)|0 How to use this note (L1 / L2 / L3)]]
+- [[SIEM-Mastery-Field-Manual#0.5 Critical clarification KQL is not one language|0.5 Critical clarification KQL is not one language]]
+- [[SIEM-Mastery-Field-Manual#1 The Microscopic Glossary|1 The Microscopic Glossary]]
+- [[SIEM-Mastery-Field-Manual#2 Log Anatomy & Fields Breakdown|2 Log Anatomy & Fields Breakdown]]
+- [[SIEM-Mastery-Field-Manual#3 The Machinery|3 The Machinery]]
+- [[SIEM-Mastery-Field-Manual#4 The What-If Scenarios|4 The What-If Scenarios]]
+- [[SIEM-Mastery-Field-Manual#5 First-Principles Mastery|5 First-Principles Mastery]]
+- [[SIEM-Mastery-Field-Manual#6 The Dotted-Field Decoder (KQL lab)|6 The Dotted-Field Decoder (KQL lab)]]
+- [[SIEM-Mastery-Field-Manual#7 Assessment Walkthrough Eagle SOC|7 Assessment Walkthrough Eagle SOC]]
+- [[SIEM-Mastery-Field-Manual#8 L3 Teach-Back Kit (ELI5 + flashcards)|8 L3 Teach-Back Kit (ELI5 + flashcards)]]
+- [[SIEM-Mastery-Field-Manual#9 Caveats & things the source text simplifies|9 Caveats & things the source text simplifies]]
 
 ---
 
@@ -83,25 +95,25 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 #### SIEM
 - **Under the hood:** Security Information & Event Management = (1) log collection, (2) normalisation into a common schema, (3) indexed storage, (4) search, (5) correlation/alert rules, (6) dashboards, (7) case/triage workflow. Here the SIEM is the **Elastic Stack** (Elasticsearch + Kibana).
 - **Why SOC cares:** Single place to ask "what happened across 5,000 machines?" in seconds instead of RDP-ing into each one.
-- **Connects to:** [[#Elasticsearch]], [[#Kibana]], [[#Index / Index pattern / Data view]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Elasticsearch|Elasticsearch]], [[SIEM-Mastery-Field-Manual#Kibana|Kibana]], [[SIEM-Mastery-Field-Manual#Index / Index pattern / Data view|Index / Index pattern / Data view]].
 - **ELI5:** One giant notebook where every building in town writes down what happened, and you can search it with one question.
 
 #### Kibana (port `5601`) ==🟡"its like a backEnd "==
 - **Under the hood:** A web app (Node.js) that talks to Elasticsearch's REST API (port `9200`). It stores *its own* objects (dashboards, data views, saved searches) in the hidden `.kibana*` indices. `http://[Target IP]:5601` is just Kibana's HTTP listener.
 - **Why SOC cares:** It is your window: Discover (raw events), Dashboards, Lens, Alerts, Security app.
-- **Connects to:** [[#Elasticsearch]], [[#Dashboard]], [[#Lens]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Elasticsearch|Elasticsearch]], [[SIEM-Mastery-Field-Manual#Dashboard|Dashboard]], [[SIEM-Mastery-Field-Manual#Lens|Lens]].
 - **ELI5:** The TV screen. The library (Elasticsearch) does the finding, Kibana draws the pictures.
 
 #### Elasticsearch / Elastic
 - **Under the hood:** A distributed ==🟡search engine== built on Lucene. Documents (JSON) are stored in **shards**; each text field is turned into an **inverted index** (word → list of documents) and each keyword/number field also gets **doc values** (column-oriented, for sorting/aggregating).
 - **Why SOC cares:** Millisecond search over billions of events; every dashboard number is an Elasticsearch **aggregation**.
-- **Connects to:** [[#Text vs keyword and .keyword]], [[#Aggregation]], [[#Index / Index pattern / Data view]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Text vs keyword and .keyword|Text vs keyword and .keyword]], [[SIEM-Mastery-Field-Manual#Aggregation|Aggregation]], [[SIEM-Mastery-Field-Manual#Index / Index pattern / Data view|Index / Index pattern / Data view]].
 - **ELI5:** A librarian with a magic card catalogue who can instantly say "these 50 pages mention a failed door-knock."
 
 #### Dashboard
 - **Under the hood:** A saved object (JSON in `.kibana`) = a grid of **panels** + optional global filters/time. Not data — only *instructions* for what to ask Elasticsearch.
 - **Why SOC cares:** A wall of "what is abnormal right now"; the Eagle assessment dashboard `SOC-Alerts` has 7 panels.
-- **Connects to:** [[#Visualization / Panel]], [[#Time picker]], [[#Saved objects]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Visualization / Panel|Visualization / Panel]], [[SIEM-Mastery-Field-Manual#Time picker|Time picker]], [[SIEM-Mastery-Field-Manual#Saved objects|Saved objects]].
 - **ELI5:** A poster board where you pin several charts.
 
 #### Visualization / Panel
@@ -110,7 +122,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - **ELI5:** One picture on the poster board.
 
 #### Lens
-- **Under the hood:** Kibana's drag-and-drop visualization editor ("Edit lens"). It *generates* Elasticsearch aggregation JSON for you (see [[#3 The Machinery]] for the exact DSL).
+- **Under the hood:** Kibana's drag-and-drop visualization editor ("Edit lens"). It *generates* Elasticsearch aggregation JSON for you (see [[SIEM-Mastery-Field-Manual#3 The Machinery|3 The Machinery]] for the exact DSL).
 - **Why SOC cares:** Fast iteration; "Inspect → Requests" shows the real query — your bridge to Query DSL.
 - **ELI5:** LEGO instructions where you click bricks and it builds the question for the librarian.
 
@@ -121,14 +133,14 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 
 #### Rows / Columns / Metrics (Lens table slots)
 - **Under the hood:** **Rows** and **Columns** = *bucket aggregations* (group-by). **Metrics** = *metric aggregation* computed per bucket. Multiple Rows = **nested** group-bys: user → within each user, host → within each host, logon type.
-- **Why SOC cares:** The order of Rows changes which rows survive the top-N cut-off (see [[#Top values (terms aggregation) and Rank by]]).
-- **Connects to:** [[#Aggregation]], [[#Count of records]].
+- **Why SOC cares:** The order of Rows changes which rows survive the top-N cut-off (see [[SIEM-Mastery-Field-Manual#Top values (terms aggregation) and Rank by|Top values (terms aggregation) and Rank by]]).
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Aggregation|Aggregation]], [[SIEM-Mastery-Field-Manual#Count of records|Count of records]].
 - **ELI5:** Sort the toy box: first by colour (row 1), then by size within each colour (row 2), then count how many in each pile (metric).
 
 #### Time picker (calendar icon, "last 15 years", Apply)
 - **Under the hood:** A `range` filter on `@timestamp` added to every query: `@timestamp >= now-15y`. Relative ("last 15 years") is evaluated against the **browser's clock**; absolute is fixed dates.
 - **Why SOC cares:** Default is *last 15 minutes* — lab/old data shows **"No results"** and you wrongly conclude "nothing happened". The text sets 15 years to cover historic lab events.
-- **Connects to:** [[#@timestamp]], [[#Bucket]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#@timestamp|@timestamp]], [[SIEM-Mastery-Field-Manual#Bucket|Bucket]].
 - **ELI5:** "Only show me notebook pages written between these dates."
 
 #### Add filter (filter pills)
@@ -137,7 +149,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - **ELI5:** Sticker rules on the screen: "only show pages with this stamp."
 
 #### Search bar / KQL bar / "Update" button
-- **Under the hood:** Free-text KQL parsed by Kibana into DSL. "Update" re-runs. See [[#0.5 Critical clarification KQL is not one language]] and [[#6 The Dotted-Field Decoder (KQL lab)]].
+- **Under the hood:** Free-text KQL parsed by Kibana into DSL. "Update" re-runs. See [[SIEM-Mastery-Field-Manual#0.5 Critical clarification KQL is not one language|0.5 Critical clarification KQL is not one language]] and [[SIEM-Mastery-Field-Manual#6 The Dotted-Field Decoder (KQL lab)|6 The Dotted-Field Decoder (KQL lab)]].
 - **ELI5:** Where you type your question to the librarian.
 
 #### Field search box (left sidebar: "user.")
@@ -163,18 +175,18 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - **Why SOC cares:** Detection content as code; share dashboards across SOCs.
 
 #### SOC-Alerts (dashboard name)
-- A pre-baked dashboard with 7 panels in the assessment (see [[#7 Assessment Walkthrough Eagle SOC]]). The lab says reset the target if you deleted it.
+- A pre-baked dashboard with 7 panels in the assessment (see [[SIEM-Mastery-Field-Manual#7 Assessment Walkthrough Eagle SOC|7 Assessment Walkthrough Eagle SOC]]). The lab says reset the target if you deleted it.
 
 ### B · Data & search-engine terms
 
 #### Index / Index pattern / Data view (`windows*`)
 - **Under the hood:** An **index** is a named collection of documents (e.g., `winlogbeat-2023.03.05`). An **index pattern** (renamed **data view** in newer Kibana) is a Kibana-side wildcard `windows*` that says "query all indices whose name starts with `windows`". The text: *"data from various infrastructure sources is separated into different indices: network, Windows, Linux."*
 - **Why SOC cares:** Wrong data view = wrong/empty data. Linux SSH events (assessment Viz 7) live in a *different* index than Windows ones.
-- **Connects to:** [[#Field]], [[#ECS]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Field|Field]], [[SIEM-Mastery-Field-Manual#ECS|ECS]].
 - **ELI5:** Which shelf in the library you search: "Windows shelf" or "Linux shelf".
 
 #### Field
-- **Under the hood:** A named key in the JSON document with a mapped type (`keyword`, `text`, `ip`, `date`, `long`…). Dots in names express a hierarchy (see [[#6 The Dotted-Field Decoder (KQL lab)]]).
+- **Under the hood:** A named key in the JSON document with a mapped type (`keyword`, `text`, `ip`, `date`, `long`…). Dots in names express a hierarchy (see [[SIEM-Mastery-Field-Manual#6 The Dotted-Field Decoder (KQL lab)|6 The Dotted-Field Decoder (KQL lab)]]).
 - **ELI5:** One labelled box on the notebook page.
 
 #### Mapping (implied)
@@ -197,7 +209,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - **ELI5:** Everyone agrees to call the "who" box `user.name`, no matter which building wrote the page.
 
 #### Normalisation / Parsing (implied)
-- Raw event → structured fields. See [[#3 The Machinery]].
+- Raw event → structured fields. See [[SIEM-Mastery-Field-Manual#3 The Machinery|3 The Machinery]].
 
 #### Aggregation
 - **Under the hood:** A computation over matching documents: **bucket aggs** (group docs: `terms`, `date_histogram`) and **metric aggs** (`value_count`, `avg`, `cardinality`). A Lens table = nested `terms` + a count.
@@ -211,7 +223,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 #### Top values of … (terms aggregation), "number of values 1000", "Rank by"
 - **Under the hood:** `terms` agg returns the **top N** distinct values ranked by `_count` (Count of records), alphabetically (`_key`), or by a metric. The text sets **N = 1000**. Multi-shard terms aggs are *approximate* for high cardinality.
 - **Why SOC cares:** If 5,000 distinct usernames exist, you see only 1000 → the 1001st (maybe the attacker) is invisible. "Rank by Alphabetical" first, "Count of records" after adding the metric (the text's Note).
-- **Connects to:** [[#Count of records]], [[#Rows / Columns / Metrics (Lens table slots)]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Count of records|Count of records]], [[SIEM-Mastery-Field-Manual#Rows / Columns / Metrics (Lens table slots)|Rows / Columns / Metrics (Lens table slots)]].
 - **ELI5:** "Show me the 1000 biggest piles."
 
 #### Count of records
@@ -220,23 +232,23 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - **ELI5:** How many pages are in the pile.
 
 #### Query DSL (implied)
-- The JSON that Kibana sends to Elasticsearch. See the full example in [[#3 The Machinery]].
+- The JSON that Kibana sends to Elasticsearch. See the full example in [[SIEM-Mastery-Field-Manual#3 The Machinery|3 The Machinery]].
 
 #### @timestamp (implied)
-- The event time field (UTC, ISO 8601 / epoch ms). Time picker filters on it. See [[#2 Log Anatomy & Fields Breakdown]].
+- The event time field (UTC, ISO 8601 / epoch ms). Time picker filters on it. See [[SIEM-Mastery-Field-Manual#2 Log Anatomy & Fields Breakdown|2 Log Anatomy & Fields Breakdown]].
 
 ### C · Windows / Linux / security concepts
 
 #### Windows Security Event Log, Event ID, `event.code`
 - **Under the hood:** The Windows **EventLog service** writes audit records to `Security.evtx` (a binary XML log). Each record has an **EventID** (the "type of thing that happened") plus `EventData` name/value pairs. The audit policy decides whether it is written at all.
 - **Why SOC cares:** Event IDs are the vocabulary of Windows detections.
-- **Connects to:** [[#Event 4625]], [[#Event 4624]], [[#Event 4732 / 4733]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Event 4625|Event 4625]], [[SIEM-Mastery-Field-Manual#Event 4624|Event 4624]], [[SIEM-Mastery-Field-Manual#Event 4732 / 4733|Event 4732 / 4733]].
 - **ELI5:** Each type of thing that happens has a number stamp. 4625 = "door knock failed."
 
 #### Event 4625 — An account failed to log on
 - **Under the hood:** Logged on the machine that **was asked to authenticate** (the target host, or a DC for domain accounts). Key EventData: `TargetUserName`, `TargetDomainName`, `LogonType`, `Status`, `SubStatus`, `IpAddress`, `IpPort`, `WorkstationName`, `LogonProcessName`, `AuthenticationPackageName`.
 - **Why SOC cares:** Brute force, password spraying, user enumeration, disabled/locked account probing.
-- **Connects to:** [[#SubStatus 0xC0000072]], [[#Logon type]], [[#Brute force vs spraying vs stuffing]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#SubStatus 0xC0000072|SubStatus 0xC0000072]], [[SIEM-Mastery-Field-Manual#Logon type|Logon type]], [[SIEM-Mastery-Field-Manual#Brute force vs spraying vs stuffing|Brute force vs spraying vs stuffing]].
 - **ELI5:** "Somebody tried the door key and it didn't work."
 
 #### Event 4624 — An account was successfully logged on
@@ -251,7 +263,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 
 #### SubStatus `0xC0000072`
 - **Under the hood:** An **NTSTATUS** code. `0xC0000072` = `STATUS_ACCOUNT_DISABLED`. Bit layout: top bits `11` (`0xC`) = **error** severity; low word `0x0072` = specific reason. `Status` (e.g., `0xC000006D` = logon failure) is the *general* reason, `SubStatus` the *precise* one. Per the text, the "disabled" SubStatus appears when the **right credentials** were supplied — implying the account is real and the password is correct (so the account/password pair is *valid but disabled* — high-value intel for an attacker, and high-signal for you).
-- **Connects to:** [[#Event 4625]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Event 4625|Event 4625]].
 - **ELI5:** The guard's note says *why* the key failed: "this key belongs to someone who's been put on a break."
 
 #### Logon type
@@ -274,18 +286,18 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 
 #### RDP (Remote Desktop Protocol) / RemoteInteractive
 - **Under the hood:** Microsoft's remote GUI protocol, default **TCP 3389**, usually wrapped in TLS with **NLA** (CredSSP) so credentials are checked *before* a session is created.
-- **Why SOC cares:** Most common intrusion/lateral-movement path; admins should use the PAW. See [[#First-principles RDP and NLA]] in Section 5.
+- **Why SOC cares:** Most common intrusion/lateral-movement path; admins should use the PAW. See [[SIEM-Mastery-Field-Manual#First-principles RDP and NLA|First-principles RDP and NLA]] in Section 5.
 - **ELI5:** Remote control of a computer's screen from far away.
 
 #### Service account (`svc-`, `-svc`, `sql-svc1`, `svc-sql1`)
 - **Under the hood:** A non-human identity that runs a service/scheduled task, often with high privilege and a long complex password that never expires. Does *not* normally log on interactively.
 - **Why SOC cares:** **Any interactive/RDP logon by a service account is anomalous.** The text: *"Service account credentials are never used for RDP logons in corporate environments."*
-- **Connects to:** [[#Naming convention]], [[#Logon type]].
+- **Connects to:** [[SIEM-Mastery-Field-Manual#Naming convention|Naming convention]], [[SIEM-Mastery-Field-Manual#Logon type|Logon type]].
 - **ELI5:** A robot janitor with a master key. It should never sit at the front desk.
 
 #### Computer account (name ends with `$`)
 - **Under the hood:** Every domain-joined machine has an AD account `HOSTNAME$`. It authenticates constantly (Kerberos, SMB) → huge noise. KQL `NOT user.name: *$` removes them.
-- **Why SOC cares:** Noise reduction. Trade-off: machine accounts *are* abused (relay, delegation, ticket forging) and an attacker-created account named `x$` hides from this filter (see [[#4 The What-If Scenarios]]).
+- **Why SOC cares:** Noise reduction. Trade-off: machine accounts *are* abused (relay, delegation, ticket forging) and an attacker-created account named `x$` hides from this filter (see [[SIEM-Mastery-Field-Manual#4 The What-If Scenarios|4 The What-If Scenarios]]).
 - **ELI5:** The buildings themselves have name tags ending in `$`; we ignore them to focus on people.
 
 #### Disabled account
@@ -321,7 +333,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 - Only approved executables run (AppLocker/WDAC). "Limited extent" = gaps attackers use (living-off-the-land binaries).
 
 #### Naming convention
-- Predictable account/host names (`svc-`, `-svc`) let **detection by pattern** work, and let you spot violations. See the trap in [[#7 Assessment Walkthrough Eagle SOC]]: Example 3 hunts `svc-*` but the assessment convention is `*-svc` (e.g., `sql-svc1`).
+- Predictable account/host names (`svc-`, `-svc`) let **detection by pattern** work, and let you spot violations. See the trap in [[SIEM-Mastery-Field-Manual#7 Assessment Walkthrough Eagle SOC|7 Assessment Walkthrough Eagle SOC]]: Example 3 hunts `svc-*` but the assessment convention is `*-svc` (e.g., `sql-svc1`).
 
 #### Linux: `root`, `sudo`, SSH
 - `root` = UID 0, unlimited power. Remote root login is **blocked** (`PermitRootLogin no`), so users log in as themselves and elevate with **`sudo`** (logged in `auth.log`/journal). A **successful remote root SSH login = impossible in a healthy environment → critical alert** (Viz 7).
@@ -340,7 +352,7 @@ Every glossary term below has an **ELI5** line. Section 8 has the full teach-bac
 
 | Term | Under the hood | Why a SOC cares | Connects to | ELI5 |
 |---|---|---|---|---|
-| **Alert** | Output of a detection rule/signature matching events | The unit of analyst work | [[#Triage]] | A flashing light |
+| **Alert** | Output of a detection rule/signature matching events | The unit of analyst work | [[SIEM-Mastery-Field-Manual#Triage|Triage]] | A flashing light |
 | **Alert triaging** | Evaluate + prioritise alerts → decide threat level/impact | Limited analysts, unlimited alerts | Escalation | Night guard sorts: burglar / cat / janitor |
 | **Escalation** | Hand-off to a higher tier/IR team with a *complete* summary | Right person, right time, decision authority | Tier 1/2/3 | Calling the chief with the full story |
 | **Metadata** | Alert wrapper: timestamp, src/dst IP, affected systems, rule name | First 30-second context | Initial review | The label on the box |
