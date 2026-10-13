@@ -1,8 +1,10 @@
 ---
 title: "SIEM Visualization Example 1: Failed Logon Attempts (All Users) | Hack The Box Academy"
 source: ""
-exported: "2026-10-09T14:39:02.659Z"
-tags: [htb, academy]
+exported: 2026-10-09T14:39:02.659Z
+tags:
+  - htb
+  - academy
 ---
 # SIEM Visualization Example 1: Failed Logon Attempts (All Users) | Hack The Box Academy
 
