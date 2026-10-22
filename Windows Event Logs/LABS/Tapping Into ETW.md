@@ -131,3 +131,30 @@ The think is they are making a lot of changes so the copy paste isn't working an
 
 
 ![[../../Attathemnts/Pasted image 20261019142029.png|Pasted image 20261019142029.png]]
+
+
+
+
+Day 1000+ lol its okey this is the learning process :
+
+
+![[../../Attathemnts/Pasted image 20261020141315.png|Pasted image 20261020141315.png]]
+
+
+
+![[../../Attathemnts/Pasted image 20261020141943.png|Pasted image 20261020141943.png]]
+
+
+
+
+![[../../Attathemnts/Pasted image 20261020195114.png|Pasted image 20261020195114.png]]
+
+
+TdhGetEventMapInformation
+
+
+
+![[../../Attathemnts/Pasted image 20261021200918.png|Pasted image 20261021200918.png]]
+
+
+
