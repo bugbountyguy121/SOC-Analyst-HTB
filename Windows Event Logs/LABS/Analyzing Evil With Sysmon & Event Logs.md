@@ -5,12 +5,12 @@
 
 
 
-![[../../Attathemnts/Pasted image 20261015185317.png|Pasted image 20261015185317.png]]
+![Pasted image 20261015185317.png](../../Attathemnts/Pasted%20image%2020261015185317.png)
 
 
 
 
-![[../../Attathemnts/Pasted image 20261015185436.png|Pasted image 20261015185436.png]]
+![Pasted image 20261015185436.png](../../Attathemnts/Pasted%20image%2020261015185436.png)
 
 
 
@@ -21,7 +21,7 @@ To view these events, navigate to the ==🔴Event Viewer== and access "Applicati
 
 maybe i got the point well we may need to trigger the event to happen then work on the lab so i wasted all of this time i should've just  read the next action
 
-![[../../Attathemnts/Pasted image 20261016103759.png|Pasted image 20261016103759.png]]
+![Pasted image 20261016103759.png](../../Attathemnts/Pasted%20image%2020261016103759.png)
 
 
 
@@ -49,7 +49,7 @@ Finally we are set to move on:
 
 
 
-![[../../Attathemnts/Pasted image 20261016105942.png|Pasted image 20261016105942.png]]
+![Pasted image 20261016105942.png](../../Attathemnts/Pasted%20image%2020261016105942.png)
 
 Now im almost sure we are going to find the even id 7
 
@@ -57,27 +57,27 @@ Now im almost sure we are going to find the even id 7
 That is the amazing part of the HTB as you can see iv'e spent hours trying to figure this  they said :
 By examining the modified configuration, we can observe that the "include" comment signifies events that should be included.
 
-![[../../Attathemnts/Pasted image 20261016111115.png|Pasted image 20261016111115.png]]
+![Pasted image 20261016111115.png](../../Attathemnts/Pasted%20image%2020261016111115.png)
 
 
 the trick is if you read bellow you see the it exclude signed Microsoft drivers 
 
 
-![[../../Attathemnts/Pasted image 20261016110937.png|Pasted image 20261016110937.png]]
+![Pasted image 20261016110937.png](../../Attathemnts/Pasted%20image%2020261016110937.png)
 
 that's an amazing feeling now it makes more since for me like if i get the event ID to show up i'm gonna be happy as hell
 
-![[../../Attathemnts/Pasted image 20261016111221.png|Pasted image 20261016111221.png]]
+![Pasted image 20261016111221.png](../../Attathemnts/Pasted%20image%2020261016111221.png)
 
 
 
-![[../../Attathemnts/Pasted image 20261016111402.png|Pasted image 20261016111402.png]]
+![Pasted image 20261016111402.png](../../Attathemnts/Pasted%20image%2020261016111402.png)
 
 
 
 
 
-![[../../Attathemnts/Pasted image 20261016111945.png|Pasted image 20261016111945.png]]
+![Pasted image 20261016111945.png](../../Attathemnts/Pasted%20image%2020261016111945.png)
 
 
 
@@ -87,7 +87,7 @@ that's an amazing feeling now it makes more since for me like if i get the event
 Finally 
 
 
-![[../../Attathemnts/Pasted image 20261016143259.png|Pasted image 20261016143259.png]]
+![Pasted image 20261016143259.png](../../Attathemnts/Pasted%20image%2020261016143259.png)
 
 
 
@@ -95,7 +95,7 @@ Finally
 Finally almost their 
 
 
-![[../../Attathemnts/Pasted image 20261016143840.png|Pasted image 20261016143840.png]]
+![Pasted image 20261016143840.png](../../Attathemnts/Pasted%20image%2020261016143840.png)
 
 
 
@@ -171,7 +171,7 @@ Event Xml:
 
 Finally hhhhh
 
-![[../../Attathemnts/Pasted image 20261016145018.png|Pasted image 20261016145018.png]]
+![Pasted image 20261016145018.png](../../Attathemnts/Pasted%20image%2020261016145018.png)
 
 
 
@@ -183,7 +183,7 @@ Finally hhhhh
 
 
 
-![[../../Attathemnts/Pasted image 20261017095113.png|Pasted image 20261017095113.png]]
+![Pasted image 20261017095113.png](../../Attathemnts/Pasted%20image%2020261017095113.png)
 
 
 
@@ -236,7 +236,7 @@ SID               : S-1-5-21-2712802632-2324259492-1677155984-500
 
 
 
-![[../../Attathemnts/Pasted image 20261017100418.png|Pasted image 20261017100418.png]]
+![Pasted image 20261017100418.png](../../Attathemnts/Pasted%20image%2020261017100418.png)
 
 
 
