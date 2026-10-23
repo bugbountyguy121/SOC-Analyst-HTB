@@ -40,11 +40,11 @@ To :
 PS C:\Users\Administrator> Get-WinEvent -FilterHashtable @{Path='C:\Tools\chainsaw\EVTX-ATTACK-SAMPLES\Lateral Movement\net_share_drive_5142'; ID=5142} | Select-Object TimeCreated, ID, ProviderName, LevelDisplayName, Message | Format-Table -AutoSize
 ```
 
-![[../../Attathemnts/Screenshot_2026-10-22_12-53-56.png|Screenshot_2026-10-22_12-53-56.png]]
+![Screenshot_2026-10-22_12-53-56.png](../../Attathemnts/Screenshot_2026-10-22_12-53-56.png)
 
 
 
-![[../../Attathemnts/Pasted image 20261022140403.png|Pasted image 20261022140403.png]]
+![Pasted image 20261022140403.png](../../Attathemnts/Pasted%20image%2020261022140403.png)
 
 
 
