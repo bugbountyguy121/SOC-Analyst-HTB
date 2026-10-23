@@ -5,6 +5,8 @@ exported: 2026-10-22T11:53:57.324Z
 tags:
   - htb
   - walkthrough
+dg-home: true
+dg-publish: true
 ---
 # Get-WinEvent | Hack The Box Academy (Walkthrough)
 
