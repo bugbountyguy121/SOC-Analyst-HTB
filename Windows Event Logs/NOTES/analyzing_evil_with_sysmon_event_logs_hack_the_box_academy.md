@@ -178,7 +178,7 @@ Good. The goal is to solve this like a SOC analyst, not memorize an executable n
 
 
 
-[[../LABS/HTB-Event-Correlation-Clean-Guide|HTB-Event-Correlation-Clean-Guide]]
+[HTB-Event-Correlation-Clean-Guide](../LABS/HTB-Event-Correlation-Clean-Guide.md)
 
 
 
@@ -364,7 +364,7 @@ Then, RDP to `[Target IP]` using the provided credentials and answer the questio
 
 
 
-[[../LABS/Analyzing Evil With Sysmon & Event Logs|Analyzing Evil With Sysmon & Event Logs]]
+[Analyzing Evil With Sysmon & Event Logs](../LABS/Analyzing%20Evil%20With%20Sysmon%20&%20Event%20Logs.md)
 
 
 ---
