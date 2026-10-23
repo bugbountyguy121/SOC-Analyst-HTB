@@ -182,5 +182,5 @@ Now, let's focus on retrieving specific event logs using the Get-WinEvent cmdlet
 * * *
 
 
-[[../LABS/Get-WinEvent|Get-WinEvent]]
+[Get-WinEvent](../LABS/Get-WinEvent.md)
 
