@@ -24,30 +24,30 @@ Navigate to the bottom of this section and click on `Click here to spawn the tar
 
 
 
-![[../../Attathemnts/Pasted image 20261022153553.png|Pasted image 20261022153553.png]]
+![Pasted image 20261022153553.png](../../Attathemnts/Pasted%20image%2020261022153553.png)
 
 
 
 As you can see we can't filter the Event ID 7 : 
-![[../../Attathemnts/Pasted image 20261022153811.png|Pasted image 20261022153811.png]]
+![Pasted image 20261022153811.png](../../Attathemnts/Pasted%20image%2020261022153811.png)
 
 
 We need to reconfigure sysmon for that :
 
-![[../../Attathemnts/Pasted image 20261022154350.png|Pasted image 20261022154350.png]]
+![Pasted image 20261022154350.png](../../Attathemnts/Pasted%20image%2020261022154350.png)
 
 
 What may take you 3 days to learn you can do it latter in 5 min 
-![[../../Attathemnts/Pasted image 20261022154706.png|Pasted image 20261022154706.png]]
+![Pasted image 20261022154706.png](../../Attathemnts/Pasted%20image%2020261022154706.png)
 
 
 I have a big question:
 We had almost 1566 entries how we can search all of them if we dont know that its already named  winnet.dll
 + what if the attacker changed its name?
 
-![[../../Attathemnts/Pasted image 20261022163101.png|Pasted image 20261022163101.png]]
+![Pasted image 20261022163101.png](../../Attathemnts/Pasted%20image%2020261022163101.png)
 
-![[../../Attathemnts/Pasted image 20261022163221.png|Pasted image 20261022163221.png]]
+![Pasted image 20261022163221.png](../../Attathemnts/Pasted%20image%2020261022163221.png)
 
 
 
@@ -126,7 +126,7 @@ Instead of searching for an unknown name, you hunt for the behavior by using a p
 > ```
 
 
-![[../../Attathemnts/Pasted image 20261022170724.png|Pasted image 20261022170724.png]]
+![Pasted image 20261022170724.png](../../Attathemnts/Pasted%20image%2020261022170724.png)
 
 
 
@@ -136,7 +136,7 @@ Instead of searching for an unknown name, you hunt for the behavior by using a p
 
 
 
-![[../../Attathemnts/Pasted image 20261022173627.png|Pasted image 20261022173627.png]]
+![Pasted image 20261022173627.png](../../Attathemnts/Pasted%20image%2020261022173627.png)
 
 
 
@@ -198,7 +198,7 @@ Instead of looking for PowerShell itself, we look for a process doing something 
 
 
 
-![[../../Attathemnts/Pasted image 20261022172735.png|Pasted image 20261022172735.png]]
+![Pasted image 20261022172735.png](../../Attathemnts/Pasted%20image%2020261022172735.png)
 
 
 Calculator.exe
@@ -286,7 +286,7 @@ The thinking process here is a "reverse timeline search." Now that you have the 
 
 
 
-![[../../Attathemnts/Pasted image 20261022173703.png|Pasted image 20261022173703.png]]
+![Pasted image 20261022173703.png](../../Attathemnts/Pasted%20image%2020261022173703.png)
 
 # 🛡️ Hunting Process Injection (Finding the Injector)
 
@@ -368,7 +368,7 @@ The thinking process here is a "reverse timeline search." Now that you have the 
 
 
 
-![[../../Attathemnts/Pasted image 20261022174149.png|Pasted image 20261022174149.png]]
+![Pasted image 20261022174149.png](../../Attathemnts/Pasted%20image%2020261022174149.png)
 
 
 
@@ -388,7 +388,7 @@ Sysmon Event ID 8: CreateRemoteThread
 
 
 
-![[../../Attathemnts/Pasted image 20261022174647.png|Pasted image 20261022174647.png]]
+![Pasted image 20261022174647.png](../../Attathemnts/Pasted%20image%2020261022174647.png)
 
 
 
@@ -477,11 +477,11 @@ If the attacker dumps the memory over the network or uses an advanced fileless t
 > ```
 
 
-![[../../Attathemnts/Pasted image 20261022180433.png|Pasted image 20261022180433.png]]
+![Pasted image 20261022180433.png](../../Attathemnts/Pasted%20image%2020261022180433.png)
 
 
 
-![[../../Attathemnts/Pasted image 20261022175438.png|Pasted image 20261022175438.png]]
+![Pasted image 20261022175438.png](../../Attathemnts/Pasted%20image%2020261022175438.png)
 
 
 
@@ -538,7 +538,7 @@ You are on the exact right track with your logic. The only minor correction is t
 
 
 
-![[../../Attathemnts/Pasted image 20261022180904.png|Pasted image 20261022180904.png]]
+![Pasted image 20261022180904.png](../../Attathemnts/Pasted%20image%2020261022180904.png)
 
 - **Logon Type: 5**: This designates a "Service" logon. It happens automatically when internal Windows services execute scheduled tasks or start up. It is not an interactive or remote login by a human.
     
@@ -556,7 +556,7 @@ If the attacker had successfully used the credentials they stole during the LSAS
 
 
 
-![[../../Attathemnts/Pasted image 20261022181451.png|Pasted image 20261022181451.png]]
+![Pasted image 20261022181451.png](../../Attathemnts/Pasted%20image%2020261022181451.png)
 
 
 
@@ -612,7 +612,7 @@ The challenge asks for the process that was used to _temporarily execute code_. 
 
 
 
-![[../../Attathemnts/Pasted image 20261022182101.png|Pasted image 20261022182101.png]]
+![Pasted image 20261022182101.png](../../Attathemnts/Pasted%20image%2020261022182101.png)
 
 
 

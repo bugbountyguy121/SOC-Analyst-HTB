@@ -808,7 +808,7 @@ The results are quite intriguing – two failed attempts for the administrator a
 At this stage, we have amassed a significant amount of information to present and initiate a comprehensive incident response, in accordance with company policies.
 
 Please allow 3-5 minutes for Kibana to become available after spawning the target of the questions below.
-[[../LABS/Hunting For Stuxbot|Hunting For Stuxbot]]
+[Hunting For Stuxbot](../LABS/Hunting%20For%20Stuxbot.md)
 
 
 ---

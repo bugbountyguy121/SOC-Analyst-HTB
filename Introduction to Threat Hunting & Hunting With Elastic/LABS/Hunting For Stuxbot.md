@@ -22,7 +22,7 @@ a comprehensive search can be initiated based on [Sysmon Event ID 15](https://ww
 
 
 When i saw this :
-![[../../Attathemnts/Pasted image 20261023151528.png|Pasted image 20261023151528.png]]
+![Pasted image 20261023151528.png](../../Attathemnts/Pasted%20image%2020261023151528.png)
 
 
 i wasn't able to do the same config even that i had a part of the module wish covers this but you really need to keep this with u :
@@ -86,7 +86,7 @@ By stacking the rows in this order[cite: 3], you force the table to aggregate th
 > In the Discover tab, you can search `process.executable:*` to filter your view to *only* show logs where an executing process is recorded, stripping out background noise before you even start hunting.
 
 
-![[../../Attathemnts/Pasted image 20261023154701.png|Pasted image 20261023154701.png]]
+![Pasted image 20261023154701.png](../../Attathemnts/Pasted%20image%2020261023154701.png)
 
 
 
@@ -94,13 +94,13 @@ C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
 
 
 
-![[../../Attathemnts/Pasted image 20261023155253.png|Pasted image 20261023155253.png]]
+![Pasted image 20261023155253.png](../../Attathemnts/Pasted%20image%2020261023155253.png)
 
 
 C:\Users\bob\Downloads\invoice.one:Zone.Identifier
 
 
-![[../../Attathemnts/Pasted image 20261023155437.png|Pasted image 20261023155437.png]]
+![Pasted image 20261023155437.png](../../Attathemnts/Pasted%20image%2020261023155437.png)
 
 
 
