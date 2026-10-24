@@ -110,3 +110,14 @@ This is the date you should focus on
 
 They  said As part of our search process, since we're interested in DNS names, we'd like to display only the `dns.question.name` field in the result table. Please note the specified time `March 26th 2023 @ 22:05:00` to `March 26th 2023 @ 22:05:48` 
 but if you check you are going to find that this is the real date : - 2023-03-26 20:05:43.609
+
+-------
+
+
+
+second try again LOL:
+
+
+First thing i want to do is this when working with the Elastic search instead of working like searching for something then doing the next if you want other thing you need to remove what you did..... the best option is for each phase create the virtualization  and  save it up you can come back to it when ever you want also its more professional 
+
+
