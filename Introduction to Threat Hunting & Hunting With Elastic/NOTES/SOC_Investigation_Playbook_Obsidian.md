@@ -255,21 +255,21 @@ You do **not** need to know every low-level detail before escalating credible co
 
 ## 3. Process — execution and relationships
 
-| Field | Meaning / use |
-|---|---|
-| `process.name` | Process/program name. |
-| `process.executable` | Full executable path, if collected. |
-| `process.command_line` | Full process command line, often one of the richest fields. |
-| `process.args` | Argument array, if correctly parsed. |
-| `process.pid` | PID; may be reused over time. |
-| `process.entity_id` | Unique process identifier supplied by the source; Sysmon Process GUIDs may map here. Prefer it when available. |
-| `process.parent.name` | Parent process name. |
-| `process.parent.executable` | Parent executable path. |
-| `process.parent.command_line` | Command line used to start the parent. |
-| `process.parent.pid` / `process.parent.entity_id` | Parent identity, if mapped. |
-| `process.hash.sha256` | Hash associated with process image, depending on mapping. |
-| `process.code_signature.*` | Signer/signature metadata, if collected. |
-| `process.working_directory` | Working directory, if logged. |
+| Field                                             | Meaning / use                                                                                                  |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `process.name`                                    | Process/program name.                                                                                          |
+| `process.executable`                              | Full executable path, if collected.                                                                            |
+| `process.command_line`                            | Full process command line, often one of the richest fields.                                                    |
+| `process.args`                                    | Argument array, if correctly parsed.                                                                           |
+| `process.pid`                                     | PID; may be reused over time.                                                                                  |
+| `process.entity_id`                               | Unique process identifier supplied by the source; Sysmon Process GUIDs may map here. Prefer it when available. |
+| `process.parent.name`                             | Parent process name.                                                                                           |
+| `process.parent.executable`                       | Parent executable path.                                                                                        |
+| `process.parent.command_line`                     | Command line used to start the parent.                                                                         |
+| `process.parent.pid` / `process.parent.entity_id` | Parent identity, if mapped.                                                                                    |
+| `process.hash.sha256`                             | Hash associated with process image, depending on mapping.                                                      |
+| `process.code_signature.*`                        | Signer/signature metadata, if collected.                                                                       |
+| `process.working_directory`                       | Working directory, if logged.                                                                                  |
 
 ### Process pivot logic
 

@@ -86,7 +86,7 @@ By stacking the rows in this order[cite: 3], you force the table to aggregate th
 > In the Discover tab, you can search `process.executable:*` to filter your view to *only* show logs where an executing process is recorded, stripping out background noise before you even start hunting.
 
 
-![Pasted image 20261023154701.png](../../Attathemnts/Pasted%20image%2020261023154701.png)
+
 
 
 
@@ -119,5 +119,62 @@ second try again LOL:
 
 
 First thing i want to do is this when working with the Elastic search instead of working like searching for something then doing the next if you want other thing you need to remove what you did..... the best option is for each phase create the virtualization  and  save it up you can come back to it when ever you want also its more professional 
+
+
+This is amazing we are getting progress 
+
+
+![Pasted image 20261024162523.png](../../Attathemnts/Pasted%20image%2020261024162523.png)
+
+
+
+We know when the file was installed , how it got installed and also its name hash the name of the machine 
+
+
+
+
+# Tracking File Origins: Endpoint vs. Network Logs
+
+
+> [!NOTE] Core Concept
+> When investigating a downloaded or dropped file, network logs track *who initiated the connection*, not the direction the file traveled.
+
+## Log Field Distinctions
+
+*   **`host.ip` (Endpoint Log):** The local machine where the file was saved. Often records an array of all active interfaces at that exact moment (e.g., local LAN, APIPA, IPv6).
+*   **`source.ip` (Network Log):** The IP that *started* the TCP connection. If a user clicked a download link, the victim's local IP is the source. 
+*   **`destination.ip` (Network Log):** The external IP that *received* the request and actually delivered the file. **This is the malicious hosting server.**
+
+## Investigation Pivot Strategy
+
+1. **Endpoint Log:** Locate the File Creation event. Note the exact timestamp and the victim's primary routable `host.ip`.
+2. **Network Log:** Query network traffic (firewall, proxy, or Zeek) at that exact timestamp where the `source.ip` matches the victim's IP.
+3. **Identify:** The resulting `destination.ip` in that network event reveals exactly where the file came from.
+
+
+
+192.168.28.130
+
+
+2023-03-26 20:05:43.609
+
+
+you should change time config for time 
+
+
+![Pasted image 20261024165624.png](../../Attathemnts/Pasted%20image%2020261024165624.png)
+
+
+its an amazing thing about HTB they give thing and they tweak the config so they make sure you navigate every corner of the tool 
+
+
+(File create) and the "invoice.one" file name.
+
+```
+event.code:11 AND file.name:invoice.one*
+```
+
+![Pasted image 20261024172011.png](../../Attathemnts/Pasted%20image%2020261024172011.png)
+
 
 
