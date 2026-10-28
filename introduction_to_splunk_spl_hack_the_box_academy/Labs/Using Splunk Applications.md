@@ -144,3 +144,145 @@ Lets work on this :
 ```
 
 
+By using :
+
+
+```
+index="main" | stats count by sourcetype | sort - count
+```
+
+
+![Pasted image 20261028080915.png](../../Attathemnts/Pasted%20image%2020261028080915.png)
+
+
+```
+sourcetype="WinEventLog:Security" | table *
+```
+
+Then click to expand several events. Ask:
+- Is this really the source/type I intended?
+- What does `_raw` contain?
+- Which fields are extracted?
+- Are values complete paths or only filenames?
+- Is the computer represented by `host`, `ComputerName`, or another field?
+- Are the event codes present and in the format I expect?
+- Is this a sample of the time range or a complete view?
+
+
+I've got a  lot of info 
+
+
+![Pasted image 20261028081411.png](../../Attathemnts/Pasted%20image%2020261028081411.png)
+
+
+
+
+```
+EventCode=3
+| stats count by sourcetype
+```
+
+
+interesting :
+
+```
+EventCode=3  sourcetype="WinEventLog:Sysmon"
+```
+
+
+
+
+
+
+
+![Pasted image 20261028082552.png](../../Attathemnts/Pasted%20image%2020261028082552.png)
+
+
+
+
+Finally 
+
+
+![Pasted image 20261028083735.png](../../Attathemnts/Pasted%20image%2020261028083735.png)
+
+
+```
+EventCode=3  sourcetype="WinEventLog:Sysmon" 
+|  search Image = *SharpHound.exe*
+```
+
+
+# Splunk SPL — Quick Syntax Rules
+
+> **Mental model:** Find the right events → check the fields → process the results → verify the output.
+
+## 1. Basic query shape
+
+```
+index="main" EventCode=3 Image="*SharpHound.exe*"
+| table _time, Image, ComputerName
+| sort - _time
+```
+
+- **Before `|`**: choose the index and filter matching events.
+- **After `|`**: put a command that processes the current results.
+- **Each `|`**: passes output to the next command.
+
+## 2. Core language rules
+
+|Rule|Example|Meaning|
+|---|---|---|
+|Filter on fields|`EventCode=3 Image="*net.exe*"`|Conditions separated by spaces normally act like **AND**.|
+|Alternatives|`EventCode=1 OR EventCode=3`|Match either event code.|
+|Partial match|`Image="*SharpHound.exe*"`|`*` matches any text before/after the filename.|
+|Group logic|`(EventCode=1 OR EventCode=3) Image="*net.exe*"`|Apply the image filter to either event code.|
+|Pipe to a command|`|search Image="_net.exe_"`|
+|Name an output|`count AS event_count`|`AS` gives a calculated result a readable name.|
+
+**Remember:** a syntactically valid field/value filter can still return nothing if the field or value doesn't match your dataset. Verify field names in actual events.
+
+## 3. Commands worth knowing first
+
+|Goal|Pattern|Result|
+|---|---|---|
+|Inspect evidence|`|table _time, Image, CommandLine`|
+|Count all matches|`|stats count`|
+|Count by field|`|stats count by Image`|
+|Count unique values|`|stats dc(ComputerName) AS unique_computers`|
+|Create a field|`|eval duration = last_time - first_time`|
+|Filter results|`|where duration < 600`|
+|Sort descending|`|sort - count`|
+
+- `search` filters using search syntax; `where` evaluates expressions, such as comparing two fields or checking a calculated number.
+- `stats` summarizes events. After it runs, original event fields usually disappear unless they're used in the grouping or aggregations.
+- `AS` names outputs; you choose descriptive aliases like `event_count` or `duration_seconds`. The source fields, such as `Image` and `_time`, must be discovered in the events.
+
+## 4. Debug a failed search
+
+1. **Source:** right index and time range?
+2. **Event:** right event ID / activity?
+3. **Fields:** do the field names and values actually exist?
+4. **Filters:** did a condition exclude the events?
+5. **Pipeline:** is each `|` followed by a valid command?
+6. **Output:** does the result answer the question, or did `stats` hide details you need?
+
+## Reusable starter templates
+
+**Inspect first:**
+
+```
+index="<index>" <event filters>
+| table _time, <field_1>, <field_2>
+```
+
+**Count by a field:**
+
+```
+index="<index>" <event filters>
+| stats count by <group_field>
+| sort - count
+```
+
+Replace placeholders with verified values. Add one stage at a time and inspect the output before continuing.
+
+
