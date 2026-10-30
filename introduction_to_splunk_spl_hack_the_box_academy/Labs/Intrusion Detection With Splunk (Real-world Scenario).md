@@ -453,3 +453,89 @@ index="main" sourcetype="WinEventLog:Sysmon" EventCode=7 Image="*rundll32.exe" l
 
 
 
+
+
+
+
+
+---
+
+---
+
+
+
+
+
+
+![Pasted image 20261030155751.png](../../Attathemnts/Pasted%20image%2020261030155751.png)
+
+
+
+![Pasted image 20261030155758.png](../../Attathemnts/Pasted%20image%2020261030155758.png)
+
+
+
+![mermaid-diagram(1).png](../../Attathemnts/mermaid-diagram(1).png)
+
+
+
+
+
+It's going to be something like this : 
+
+
+```
+index="main" EventCode=7 ImageLoaded="*clr.dll*"
+| stats count by Image
+| sort 0 + count
+```
+
+
+
+
+
+
+![Pasted image 20261030161657.png](../../Attathemnts/Pasted%20image%2020261030161657.png)
+
+
+
+
+```
+Image = C:\Users\waldo\Downloads\SharpHound.exe
+```
+
+
+
+
+Now we are going to run this : 
+
+```
+index="main" (EventCode=1 OR EventCode=5)
+Image="*SharpHound.exe"
+| table _time host EventCode Image ProcessGuid ProcessId ParentImage CommandLine
+| sort 0 _time
+```
+
+
+![Pasted image 20261030162504.png](../../Attathemnts/Pasted%20image%2020261030162504.png)
+
+
+
+
+![Pasted image 20261030162642.png](../../Attathemnts/Pasted%20image%2020261030162642.png)
+
+
+
+
+
+
+
+```
+index="main" EventCode=1 ParentImage="*randomfile.exe*"
+| table _time ComputerName User Image CommandLine
+
+```
+
+
+
+
