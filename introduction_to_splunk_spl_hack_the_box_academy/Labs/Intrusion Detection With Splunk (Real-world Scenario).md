@@ -1,6 +1,8 @@
 
 
 
+
+
 ![Pasted image 20261029110813.png](../../Attathemnts/Pasted%20image%2020261029110813.png)
 
 
@@ -539,3 +541,554 @@ index="main" EventCode=1 ParentImage="*randomfile.exe*"
 
 
 
+
+
+here me again after the weekend trying to solve this lets see how it go
+
+By using :
+
+```
+index=* EventCode=7 ImageLoaded="*clr.dll*"
+| stats count by Image
+```
+
+
+
+I was completely wrong 
+
+
+
+## 🎯 Objective
+
+Find suspicious processes loading `clr.dll`, then identify which process could be used as a temporary execution host for C# code.
+
+## 1. Understand the concept
+
+- `clr.dll` = .NET Common Language Runtime, needed to execute managed .NET code.
+    
+- C# applications normally load the CLR.
+    
+- Attackers can abuse existing processes to host .NET code.
+    
+- `rundll32.exe` is a legitimate Windows utility designed to execute functions exported by DLLs. It can also be abused as a code execution host.
+    
+
+**Important:** Loading `clr.dll` alone does not prove an attack. We need to understand which process loaded it and why.
+
+## 2. Investigation workflow
+
+### Step 1 — Find CLR loads
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=7 ImageLoaded="*clr.dll"
+| stats count by Image
+| sort 0 - count
+```
+
+Sysmon Event ID 7 = Image loaded.
+
+Important fields:
+
+- `Image`: process loading the DLL.
+    
+- `ImageLoaded`: DLL being loaded.
+    
+
+### Step 2 — Separate expected applications from unusual candidates
+
+The original investigation excluded known legitimate .NET applications, then reviewed the remaining processes.
+
+Candidates included:
+
+- `notepad.exe`
+    
+- `rundll32.exe`
+    
+- `randomfile.exe`
+    
+- `SharpHound.exe`
+    
+
+Do not assume every CLR load is malicious. SharpHound, for example, is a .NET application, so its CLR load is expected.
+
+### Step 3 — Investigate process instances
+
+Use `ProcessGuid` to follow one exact process instance.
+
+|Sysmon Event|Meaning|
+|---|---|
+|ID 1|Process creation|
+|ID 5|Process termination|
+|ID 7|DLL loading|
+
+Useful fields:
+
+- `ProcessGuid`: identity of the process instance.
+    
+- `ParentProcessGuid`: identity of its parent.
+    
+- `ParentImage`: executable that launched it.
+    
+- `CommandLine`: command used to launch it.
+    
+
+### Step 4 — The detour we took
+
+We investigated `randomfile.exe`:
+
+- It loaded `clr.dll`.
+    
+- It started at 12:09:34 and terminated at 12:33:27.
+    
+- It launched `cmd.exe`, which launched PsExec64.
+    
+- It also had a `WerFault.exe` child near termination.
+    
+
+This was genuinely suspicious activity, but following its child processes did not establish that it was the temporary C# execution host being asked for.
+
+**Lesson:** Suspicious activity is not automatically the answer to the specific investigation question.
+
+### Step 5 — Understand the role of rundll32.exe
+
+`rundll32.exe` is designed to execute functions exported by DLLs.
+
+The important combination was:
+
+1. It appeared among the suspicious CLR-loading candidates.
+    
+2. Its intended functionality is DLL-based code execution.
+    
+3. Its loading of the .NET runtime made it a relevant candidate for hosting managed C# execution.
+    
+
+This is the key reasoning behind the exercise's intended answer.
+
+## 3. Investigation mind map
+
+```
+flowchart TD
+    A["Question: Find suspicious CLR loads"] --> B["Sysmon Event ID 7"]
+    B --> C["Search ImageLoaded = clr.dll"]
+    C --> D["Identify candidate processes"]
+    D --> E["Filter expected .NET applications"]
+    E --> F["Investigate suspicious candidates"]
+    F --> G["Understand each process's purpose"]
+    G --> H["rundll32.exe"]
+    H --> I["Designed to execute DLL functions"]
+    I --> J["CLR load raises suspicion of managed code execution"]
+    J --> K["Intended answer: rundll32.exe"]
+
+    classDef start fill:#1d4ed8,color:#fff,stroke:#1d4ed8
+    classDef evidence fill:#6d28d9,color:#fff,stroke:#6d28d9
+    classDef detour fill:#92400e,color:#fff,stroke:#92400e
+    classDef answer fill:#15803d,color:#fff,stroke:#15803d
+
+    class A,B,C start
+    class D,E,F,G evidence
+    class H,I,J,K answer
+```
+
+## 4. SPL grammar learned
+
+|Syntax|Meaning|
+|---|---|
+|`index="main"`|Select the index|
+|`EventCode=7`|Filter for Event ID 7|
+|`ImageLoaded="*clr.dll"`|Match the DLL name|
+|`AND` / `OR`|Combine conditions|
+|`NOT` / `!=`|Exclude matching values|
+|`\|`|Pass results to the next command|
+|`stats count by Image`|Count events per process|
+|`where`|Filter results using conditions|
+|`table`|Display selected fields|
+|`sort`|Order results|
+
+## 5. Final takeaway
+
+**The intended HTB answer:** `**rundll32.exe**`
+
+The biggest lesson wasn't memorising a suspicious executable. It was understanding the difference between:
+
+- What a process normally does.
+    
+- What it actually did.
+    
+- Whether its observed behaviour could indicate abuse.
+    
+
+A good SOC analyst follows the evidence, but also understands the purpose and capabilities of the executable being investigated.
+
+
+
+
+
+![Pasted image 20261102120500.png](../../Attathemnts/Pasted%20image%2020261102120500.png)
+
+
+
+
+
+
+![Pasted image 20261102120412.png](../../Attathemnts/Pasted%20image%2020261102120412.png)
+
+
+
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=3 (Image="*rundll32.exe" OR Image="*cmd.exe" OR Image="*randomfile.exe" OR Image="*SharpHound.exe") | table _time, Image, DestinationIp, DestinationPort
+```
+
+![Pasted image 20261102121442.png](../../Attathemnts/Pasted%20image%2020261102121442.png)
+
+
+
+
+
+
+![Pasted image 20261102121635.png](../../Attathemnts/Pasted%20image%2020261102121635.png)
+
+
+
+![Pasted image 20261102122041.png](../../Attathemnts/Pasted%20image%2020261102122041.png)
+
+
+# HTB SOC Analyst — Splunk Skills Assessment: Complete Investigation Guide
+
+## 🎯 The mission
+
+Investigate Windows security telemetry using Splunk SPL to identify:
+
+1. Another process that accessed and dumped LSASS.
+    
+2. The DLL associated with the LSASS dumping method.
+    
+3. A suspicious process used to execute C# code.
+    
+4. Two Command and Control (C2) callback server IPs.
+    
+5. The port used by a C2 server to connect to a compromised machine.
+    
+
+---
+
+# 1. The complete investigation mind map
+
+```
+flowchart TD
+    A["HTB Splunk Skills Assessment"] --> B["Q1: LSASS Process Access"]
+    A --> C["Q2: LSASS Dumping Method"]
+    A --> D["Q3: C# Injection"]
+    A --> E["Q4: C2 Discovery"]
+    A --> F["Q5: C2 Connection Port"]
+
+    B --> B1["Sysmon Event ID 10"]
+    B1 --> B2["TargetImage = lsass.exe"]
+    B2 --> B3["Group by SourceImage"]
+    B3 --> B4["Identify the other suspicious process"]
+
+    C --> C1["Inspect Event ID 10"]
+    C1 --> C2["Examine CallTrace"]
+    C2 --> C3["Identify DLL involved in the call stack"]
+
+    D --> D1["Sysmon Event ID 7"]
+    D1 --> D2["ImageLoaded contains clr.dll"]
+    D2 --> D3["Identify unusual CLR-loading processes"]
+    D3 --> D4["Understand process functionality"]
+    D4 --> D5["rundll32.exe: potential DLL execution host"]
+
+    E --> E1["Sysmon Event ID 3"]
+    E1 --> E2["Discover network connections"]
+    E2 --> E3["Analyse source and destination IPs"]
+    E3 --> E4["Identify recurring suspicious destinations"]
+    E4 --> E5["Identify two C2 callback servers"]
+
+    F --> F1["Reuse the two C2 IPs"]
+    F1 --> F2["Filter SourceIp"]
+    F2 --> F3["Identify compromised DestinationIp"]
+    F3 --> F4["Inspect DestinationPort"]
+    F4 --> F5["Determine the port"]
+
+    classDef root fill:#1d4ed8,color:#fff,stroke:#1d4ed8
+    classDef evidence fill:#6d28d9,color:#fff,stroke:#6d28d9
+    classDef result fill:#15803d,color:#fff,stroke:#15803d
+    class A root
+    class B1,C1,D1,E1,F1,B2,C2,D2,E2,F2,F3 evidence
+    class B4,C3,D5,E5,F5 result
+```
+
+# 2. Question-by-question investigation
+
+## Q1 — Find the other process that dumped LSASS
+
+**Concept:** Process access.
+
+Sysmon Event ID 10 records one process accessing another process.
+
+Important fields:
+
+|Field|Meaning|
+|---|---|
+|`SourceImage`|Process accessing another process|
+|`TargetImage`|Process being accessed|
+|`GrantedAccess`|Permissions requested|
+|`CallTrace`|Stack trace associated with the access|
+
+**Initial search:**
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=10 TargetImage="*lsass.exe"
+| stats count by SourceImage
+| sort 0 - count
+```
+
+**Investigation logic:**
+
+1. Filter events targeting LSASS.
+    
+2. Identify which processes accessed it.
+    
+3. Distinguish ordinary Windows activity from suspicious access.
+    
+4. Identify the other process responsible for the dumping activity.
+    
+
+**Key lesson:** `SourceImage` tells you WHO accessed LSASS. `TargetImage` tells you WHAT was accessed.
+
+## Q2 — Find the misused DLL
+
+**Concept:** Investigating the method behind process access.
+
+Return to the Event ID 10 records for the suspicious process identified in Q1.
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=10 TargetImage="*lsass.exe"
+| table _time SourceImage TargetImage GrantedAccess CallTrace
+```
+
+**Focus on** `**CallTrace**`**.**
+
+It provides information about the calling stack, including modules involved in the process-access operation.
+
+Your objective is to inspect the trace and identify the DLL associated with the suspicious LSASS access.
+
+**Key lesson:** Do not just identify which executable performed an action. Investigate how it performed that action.
+
+## Q3 — Find the suspicious C# execution host
+
+**Concept:** .NET runtime loading and execution.
+
+Sysmon Event ID 7 records DLL loading.
+
+Initial search:
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=7 ImageLoaded="*clr.dll"
+| stats count by Image
+| sort 0 - count
+```
+
+Investigation logic:
+
+1. Find all processes loading `clr.dll`.
+    
+2. Separate expected .NET applications from unusual candidates.
+    
+3. Review what the remaining executable is designed to do.
+    
+4. Consider whether it can act as an execution host for managed code.
+    
+
+Candidates investigated included:
+
+- `notepad.exe`
+    
+- `rundll32.exe`
+    
+- `randomfile.exe`
+    
+- `SharpHound.exe`
+    
+
+The intended answer was `**rundll32.exe**`.
+
+Why?
+
+`rundll32.exe` is a Windows utility designed to execute functions exported by DLLs. Its CLR loading makes it an interesting candidate for abuse as a managed-code execution host.
+
+**Our detour:** We spent too much time following the child processes of `randomfile.exe`. Its PsExec activity was suspicious, but it did not answer the specific question.
+
+**Key lesson:** Understand the purpose of the executable. Don't assume temporary code execution always means launching a child process.
+
+## Q4 — Find the two C2 callback server IPs
+
+**Concept:** Network traffic analysis and Command and Control.
+
+Sysmon Event ID 3 records network connections.
+
+Important fields:
+
+|Field|Meaning|
+|---|---|
+|`SourceIp`|Originating IP|
+|`DestinationIp`|Receiving IP|
+|`SourcePort`|Originating port|
+|`DestinationPort`|Receiving port|
+|`Image`|Process associated with the connection|
+|`Initiated`|Connection initiation information|
+
+Initial discovery:
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=3
+| stats count by SourceIp DestinationIp DestinationPort Image
+| sort 0 - count
+```
+
+Then we narrowed the investigation to suspicious processes:
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=3
+(Image="*rundll32.exe" OR Image="*cmd.exe" OR Image="*randomfile.exe" OR Image="*SharpHound.exe")
+| table _time Image DestinationIp DestinationPort
+```
+
+**Investigation logic:**
+
+1. Identify unusual network connections.
+    
+2. Check which processes are communicating.
+    
+3. Look for repeated communication with common IP addresses.
+    
+4. Investigate the connection direction and endpoints.
+    
+5. Identify the two C2 callback servers.
+    
+
+Our subsequent investigation used these two IPs:
+
+- `10.0.0.186`
+    
+- `10.0.0.91`
+    
+
+**Key lesson:** Do not select an IP simply because it has the highest connection count. Investigate the traffic pattern and the process responsible.
+
+## Q5 — Find the C2 connection port
+
+**Concept:** Pivoting from a known network indicator.
+
+Now we already have the two C2 addresses from Q4.
+
+Instead of searching all network traffic again, filter for connections initiated from those two IPs.
+
+Our corrected search:
+
+```
+index="main" sourcetype="WinEventLog:Sysmon" EventCode=3
+(
+    SourceIp="10.0.0.186" OR SourceIp="10.0.0.91"
+)
+| table _time host Image SourceIp SourcePort DestinationIp DestinationPort Initiated Protocol
+| sort 0 _time
+```
+
+**Why filter** `**SourceIp**`**?**
+
+The question describes the C2 server connecting to a compromised machine.
+
+In the relevant connection direction:
+
+```
+C2 server (SourceIp)
+       |
+       | Network connection
+       v
+Compromised machine (DestinationIp)
+```
+
+Therefore:
+
+- `SourceIp` identifies the C2 server.
+    
+- `DestinationIp` identifies the receiving machine.
+    
+- `DestinationPort` identifies the port on the receiving machine.
+    
+
+The answer is determined from the relevant `DestinationPort` value in the matching event.
+
+**Key lesson:** Always establish connection direction before deciding whether to use `SourcePort` or `DestinationPort`.
+
+---
+
+# 3. Sysmon Event ID cheat sheet
+
+|Event ID|What it records|Used in|
+|---|---|---|
+|1|Process creation|Q1–Q3|
+|3|Network connection|Q4–Q5|
+|5|Process termination|Q3|
+|7|DLL/image loading|Q3|
+|10|Process access|Q1–Q2|
+
+# 4. SPL grammar — the language behind the investigation
+
+|Syntax|Meaning|
+|---|---|
+|`index="main"`|Select data index|
+|`sourcetype="..."`|Select event type/source classification|
+|`EventCode=10`|Filter by Sysmon event|
+|`Image="*name.exe"`|Match a process path using a wildcard|
+|`AND`|Both conditions must match|
+|`OR`|Either condition can match|
+|`NOT`|Exclude matching records|
+|`|`|Pass results into the next command|
+|`stats count by field`|Count and group records|
+|`dc(field)`|Count distinct values|
+|`values(field)`|List unique values|
+|`where`|Filter results using an expression|
+|`table`|Display selected fields|
+|`sort 0 - count`|Sort descending without a result limit|
+
+## 5. The SOC investigation methodology
+
+The five questions taught us one reusable process:
+
+```
+flowchart TD
+    A["Understand the question"] --> B["Identify relevant telemetry"]
+    B --> C["Select the correct Sysmon Event ID"]
+    C --> D["Filter the relevant events"]
+    D --> E["Summarise and discover patterns"]
+    E --> F["Identify a suspicious artifact"]
+    F --> G["Pivot using a process, GUID, IP or DLL"]
+    G --> H["Inspect original events"]
+    H --> I["Correlate evidence"]
+    I --> J["Validate the conclusion"]
+    J --> K["Answer the question"]
+```
+
+### The four most important investigation habits
+
+1. **Start with the question.** What evidence are you being asked to find?
+    
+2. **Choose the right telemetry.** Process access, DLL loading and network connections require different Sysmon events.
+    
+3. **Pivot using evidence.** A process name, ProcessGuid, DLL or IP address becomes your next search filter.
+    
+4. **Don't confuse suspicious with confirmed.** A clue starts an investigation; correlated evidence supports a conclusion.
+    
+
+---
+
+## Final takeaway
+
+The real purpose of this assessment was not to memorise five SPL queries.
+
+It was to learn how to move from one piece of evidence to another:
+
+**Process → DLL → Execution behaviour → Network connection → C2 infrastructure → Port.**
+
+That is the investigative chain you should remember.
